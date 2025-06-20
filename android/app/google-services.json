@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "721658220434",
+    "project_id": "your-career-app",
+    "storage_bucket": "your-career-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:721658220434:android:d5cdc3c0f0daa721acbb4b",
+        "android_client_info": {
+          "package_name": "com.yaeok.your_career_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdsTy16aM3RiXi2HAVw67oE_r84ejWTAo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
