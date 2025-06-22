@@ -18,6 +18,11 @@ class MainShellPage extends StatelessWidget {
           );
         },
         items: const [
+          // 表示順を「チャット」「日記」「職務経歴」に変更
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat_bubble_outline),
+            label: 'チャット',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.description), label: '日記'),
           BottomNavigationBarItem(icon: Icon(Icons.work), label: '職務経歴'),
         ],

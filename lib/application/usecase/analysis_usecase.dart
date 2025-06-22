@@ -2,6 +2,7 @@ import 'package:your_career_app/domain/model/analysis_result.dart';
 import 'package:your_career_app/domain/repository/analysis_repository.dart';
 import 'package:your_career_app/domain/repository/analysis_result_repository.dart';
 import 'package:your_career_app/domain/repository/auth_repository.dart';
+import 'package:your_career_app/domain/repository/chat_repository.dart';
 import 'package:your_career_app/domain/repository/diary_repository.dart';
 
 class AnalysisUsecase {
@@ -10,30 +11,36 @@ class AnalysisUsecase {
     this._diaryRepository,
     this._analysisRepository,
     this._analysisResultRepository,
+    this._chatRepository,
   );
 
   final AuthRepository _authRepository;
   final DiaryRepository _diaryRepository;
   final AnalysisRepository _analysisRepository;
   final AnalysisResultRepository _analysisResultRepository;
+  final ChatRepository _chatRepository;
 
-  /// 日記の分析を実行し、結果を保存する
+  /// 日記とチャットの分析を実行し、結果を保存する
   Future<String> executeAnalysis() async {
     final user = await _authRepository.getCurrentUser();
     if (user == null) {
       throw Exception('Not authenticated');
     }
 
+    // 日記とチャットの両方を取得
     final diaries = await _diaryRepository.watchDiaries(user.uid).first;
+    final messages = await _chatRepository.watchChatMessages(user.uid).first;
 
-    if (diaries.isEmpty) {
-      return '分析できる日記がありません。まずは日記をいくつか書いてみましょう。';
+    if (diaries.isEmpty && messages.isEmpty) {
+      return '分析できる日記やチャットがありません。まずは日記を書いたり、AIとチャットしてみましょう。';
     }
 
-    // Geminiから分析結果(Markdown文字列)を取得
-    final resultText = await _analysisRepository.analyzeDiaries(diaries);
+    // Geminiに分析を依頼
+    final resultText = await _analysisRepository.analyzeDiariesAndChat(
+      diaries,
+      messages,
+    );
 
-    // 結果をパースして保存
     try {
       final analysisResult = _parseAnalysisResult(resultText);
       await _analysisResultRepository.saveAnalysisResult(
@@ -41,7 +48,6 @@ class AnalysisUsecase {
         analysisResult,
       );
     } catch (e) {
-      // パースや保存に失敗しても、ユーザーへの分析結果表示は継続する
       print('Failed to parse or save analysis result: $e');
     }
 
