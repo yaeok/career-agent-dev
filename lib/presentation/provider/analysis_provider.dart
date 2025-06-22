@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:your_career_app/application/usecase/analysis_usecase.dart';
+import 'package:your_career_app/presentation/provider/chat_provider.dart';
 import 'repository_provider.dart';
 
 /// AnalysisUsecaseを提供するProvider
@@ -8,11 +9,13 @@ final analysisUsecaseProvider = Provider<AnalysisUsecase>((ref) {
   final diaryRepository = ref.watch(diaryRepositoryProvider);
   final analysisRepository = ref.watch(analysisRepositoryProvider);
   final analysisResultRepository = ref.watch(analysisResultRepositoryProvider);
+  final chatRepository = ref.watch(chatRepositoryProvider);
   return AnalysisUsecase(
     authRepository,
     diaryRepository,
     analysisRepository,
     analysisResultRepository,
+    chatRepository,
   );
 });
 

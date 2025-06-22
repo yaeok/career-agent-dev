@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:your_career_app/domain/model/diary_entry.dart';
 import 'package:your_career_app/domain/model/project_experience.dart';
 import 'package:your_career_app/presentation/page/analysis_page.dart';
+import 'package:your_career_app/presentation/page/chat_page.dart'; // importされていることを確認
 import 'package:your_career_app/presentation/page/home_page.dart';
 import 'package:your_career_app/presentation/page/login_page.dart';
 import 'package:your_career_app/presentation/page/main_shell_page.dart';
@@ -22,7 +23,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/',
+    initialLocation: '/chat', // 初期表示をチャット画面に変更
     routes: [
       // タブを持つメインの画面
       StatefulShellRoute.indexedStack(
@@ -30,13 +31,22 @@ final routerProvider = Provider<GoRouter>((ref) {
           return MainShellPage(navigationShell: navigationShell);
         },
         branches: [
-          // 1つ目のタブ: 日記
+          // 1つ目のタブ: チャット (順番を一番上に変更)
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/chat',
+                builder: (context, state) => const ChatPage(),
+              ),
+            ],
+          ),
+          // 2つ目のタブ: 日記
           StatefulShellBranch(
             routes: [
               GoRoute(path: '/', builder: (context, state) => const HomePage()),
             ],
           ),
-          // 2つ目のタブ: 職務経歴
+          // 3つ目のタブ: 職務経歴
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -47,35 +57,30 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
-      // ログイン画面
+      // ... 以降の画面定義は変更なし
       GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
-      // 新規登録画面
       GoRoute(path: '/signup', builder: (context, state) => const SignUpPage()),
-      // 日記作成・編集画面
       GoRoute(
         path: '/upsert-diary',
-        parentNavigatorKey: _rootNavigatorKey, // タブバーの上に表示
+        parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final diary = state.extra as DiaryEntry?;
           return UpsertDiaryPage(diary: diary);
         },
       ),
-      // 職務経歴作成・編集画面
       GoRoute(
         path: '/upsert-project',
-        parentNavigatorKey: _rootNavigatorKey, // タブバーの上に表示
+        parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
           final experience = state.extra as ProjectExperience?;
           return UpsertProjectPage(experience: experience);
         },
       ),
-      // 自己分析画面
       GoRoute(
         path: '/analysis',
-        parentNavigatorKey: _rootNavigatorKey, // タブバーの上に表示
+        parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const AnalysisPage(),
       ),
-      // 職務経歴プレビュー画面
       GoRoute(
         path: '/resume-preview',
         parentNavigatorKey: _rootNavigatorKey,
@@ -88,8 +93,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           state.uri.toString() == '/login' || state.uri.toString() == '/signup';
 
       if (authState.isLoading || authState.hasError) return null;
+
+      // ログインしていない、かつログインページ/新規登録ページ以外にアクセスしようとした場合
       if (!loggedIn && !loggingIn) return '/login';
-      if (loggedIn && loggingIn) return '/';
+
+      // ログイン済み、かつログインページ/新規登録ページにアクセスしようとした場合
+      // 初期画面であるチャット画面にリダイレクトする
+      if (loggedIn && loggingIn) return '/chat';
 
       return null;
     },
