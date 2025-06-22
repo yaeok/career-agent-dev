@@ -7,7 +7,13 @@ final analysisUsecaseProvider = Provider<AnalysisUsecase>((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
   final diaryRepository = ref.watch(diaryRepositoryProvider);
   final analysisRepository = ref.watch(analysisRepositoryProvider);
-  return AnalysisUsecase(authRepository, diaryRepository, analysisRepository);
+  final analysisResultRepository = ref.watch(analysisResultRepositoryProvider);
+  return AnalysisUsecase(
+    authRepository,
+    diaryRepository,
+    analysisRepository,
+    analysisResultRepository,
+  );
 });
 
 /// 分析結果の状態を管理するStateNotifier
